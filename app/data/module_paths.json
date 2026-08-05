@@ -1,0 +1,87 @@
+{
+  "seal-engine": [
+    "app/services/smart_seal.py",
+    "app/services/smart_stamp.py",
+    "app/services/seal_position.py",
+    "app/routes/seal_engine.py",
+    "app/routes/seal_delivery.py"
+  ],
+  "pdf-renderer": [
+    "app/services/renderer.py",
+    "app/services/postprocess.py"
+  ],
+  "auth": [
+    "app/auth.py",
+    "app/routes/auth_routes.py"
+  ],
+  "file-io": [
+    "app/routes/stamp_upload.py"
+  ],
+  "llm-agent": [
+    "app/services/agent.py",
+    "app/services/agent_tools.py",
+    "app/services/model_router.py",
+    "app/services/extractor.py",
+    "app/services/vlm_extractor.py",
+    "app/services/data_mcp.py",
+    "app/routes/agent.py",
+    "app/routes/agent_p2.py",
+    "app/routes/agent_p3.py",
+    "app/routes/chat.py",
+    "app/routes/smart_chat.py",
+    "app/routes/async_llm.py",
+    "app/routes/vlm.py"
+  ],
+  "models": [
+    "app/models.py",
+    "app/schema.py"
+  ],
+  "document-state-machine": [
+    "app/routes/contracts/__init__.py",
+    "app/routes/contracts/actions.py",
+    "app/routes/contracts/common.py",
+    "app/routes/contracts/views.py"
+  ],
+  "audit": [
+    "app/services/audit_log.py",
+    "app/services/audit_service.py"
+  ],
+  "template-manager": [
+    "app/routes/template_builder.py",
+    "app/routes/template_manager.py",
+    "app/routes/template_routes.py",
+    "app/services/template_parser.py"
+  ],
+  "companies": [
+    "app/routes/companies.py"
+  ],
+  "customers": [
+    "app/routes/customers.py"
+  ],
+  "business-docs": [
+    "app/routes/dashboard_api.py",
+    "app/routes/docs.py",
+    "app/routes/clauses_docs.py",
+    "app/routes/admin.py",
+    "app/routes/catalog.py",
+    "app/routes/reminder_export.py"
+  ],
+  "observability": [
+    "app/metrics_collector.py",
+    "app/middleware/observability.py",
+    "app/middleware/prometheus.py",
+    "app/middleware/rate_limit.py",
+    "app/middleware/sqlite_monitor.py",
+    "app/middleware/trace.py",
+    "app/middleware/trace_apm.py",
+    "app/middleware/global_sidebar.py",
+    "app/routes/metrics.py"
+  ],
+  "infrastructure": [
+    "app/main.py",
+    "app/database.py",
+    "app/db_migrate.py",
+    "app/logging_config.py",
+    "app/core/brand_globals.py"
+  ]
+}
