@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import gate, coverage, ci, health, specs, web
+from app.routers import gate, coverage, ci, health, reverse, specs, web
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,6 +38,7 @@ app.include_router(gate.router, prefix="/api/v1/gate", tags=["gate"])
 app.include_router(coverage.router, prefix="/api/v1/coverage", tags=["coverage"])
 app.include_router(ci.router, prefix="/api/v1/ci", tags=["ci"])
 app.include_router(specs.router, prefix="/api/v1/specs", tags=["specs"])
+app.include_router(reverse.router, prefix="/api/v1/reverse", tags=["reverse"])
 
 # Web UI路由
 app.include_router(web.router, tags=["web"])
