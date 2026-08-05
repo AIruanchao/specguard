@@ -107,3 +107,40 @@ class TestCoverage:
         data = r.json()
         assert data["project"] == "nonexistent-project"
         assert data["total_coverage"] == 0
+
+
+# === Web UI ===
+class TestWebUI:
+    def test_dashboard_page(self):
+        r = client.get("/")
+        assert r.status_code == 200
+        assert "SpecGuard" in r.text
+
+    def test_coverage_page(self):
+        r = client.get("/coverage")
+        assert r.status_code == 200
+        assert "覆盖率" in r.text
+
+    def test_specs_page(self):
+        r = client.get("/specs")
+        assert r.status_code == 200
+        assert "Spec" in r.text
+
+    def test_gate_page(self):
+        r = client.get("/gate")
+        assert r.status_code == 200
+        assert "门禁" in r.text
+
+    def test_static_css(self):
+        r = client.get("/static/style.css")
+        assert r.status_code == 200
+
+
+# === Specs API ===
+class TestSpecs:
+    def test_specs_list(self):
+        r = client.get("/api/v1/specs/list", params={"project": "business-document-generator"})
+        assert r.status_code == 200
+        data = r.json()
+        assert data["project"] == "business-document-generator"
+        assert isinstance(data["specs"], list)

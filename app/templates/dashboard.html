@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpecGuard — SDD治理平台</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <span class="nav-logo">🛡️ SpecGuard</span>
+    <a href="/" class="active">Dashboard</a>
+    <a href="/coverage">覆盖率</a>
+    <a href="/specs">Spec管理</a>
+    <a href="/gate">门禁检查</a>
+  </nav>
+
+  <div class="container">
+    <!-- 统计卡片 -->
+    <div class="grid-3" style="margin-bottom:24px;">
+      <div class="card stat">
+        <div class="stat-value" id="total-cov">-</div>
+        <div class="stat-label">总覆盖率</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-value" id="a-passed">-</div>
+        <div class="stat-label">A级模块达标</div>
+      </div>
+      <div class="card stat">
+        <div id="ci-status"><span class="badge badge-yellow">加载中</span></div>
+        <div class="stat-label" style="margin-top:8px;">CI状态</div>
+      </div>
+    </div>
+
+    <!-- 模块热力图 -->
+    <div class="card">
+      <div class="card-title">A级模块覆盖率</div>
+      <table>
+        <thead>
+          <tr>
+            <th>模块</th>
+            <th>级别</th>
+            <th style="width:40%;">覆盖率</th>
+            <th>目标</th>
+          </tr>
+        </thead>
+        <tbody id="module-table">
+          <tr><td colspan="4" id="loading">加载中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script>loadDashboard();</script>
+</body>
+</html>

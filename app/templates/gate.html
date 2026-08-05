@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>门禁检查 — SpecGuard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <span class="nav-logo">🛡️ SpecGuard</span>
+    <a href="/">Dashboard</a>
+    <a href="/coverage">覆盖率</a>
+    <a href="/specs">Spec管理</a>
+    <a href="/gate" class="active">门禁检查</a>
+  </nav>
+
+  <div class="container">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">PR门禁检查</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <label style="font-size:12px;color:var(--text-dim);">项目路径</label>
+            <input id="gc-project" type="text" value="/Users/maccc/projects/business-document-generator"
+              style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;">
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-dim);">变更文件（每行一个）</label>
+            <textarea id="gc-files" rows="4"
+              style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:'SF Mono',monospace;"
+              placeholder="app/services/smart_seal.py">app/services/smart_seal.py</textarea>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-dim);">PR描述</label>
+            <textarea id="gc-body" rows="3"
+              style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;"
+              placeholder="修复骑缝章 Spec: sdd/domain-spec/seal-engine/spec.md"></textarea>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-dim);">标签（逗号分隔）</label>
+            <input id="gc-labels" type="text" value=""
+              style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;"
+              placeholder="hotfix-emergency">
+          </div>
+          <button class="btn btn-primary" onclick="runGateCheck()">🔍 检查门禁</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">检查结果</div>
+        <div id="gc-result" style="min-height:200px;color:var(--text-dim);">
+          点击"检查门禁"查看结果
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

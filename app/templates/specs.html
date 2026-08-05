@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec管理 — SpecGuard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <span class="nav-logo">🛡️ SpecGuard</span>
+    <a href="/">Dashboard</a>
+    <a href="/coverage">覆盖率</a>
+    <a href="/specs" class="active">Spec管理</a>
+    <a href="/gate">门禁检查</a>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div class="card-title" style="margin:0;">Spec文件列表</div>
+        <button class="btn btn-primary" onclick="loadSpecs()">🔄 刷新</button>
+      </div>
+      <div id="spec-list"><div id="loading">加载中...</div></div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script>
+    async function loadSpecs() {
+      const data = await fetchJSON(`${API}/specs/list?project=business-document-generator`);
+      const el = document.getElementById('spec-list');
+      if (!data.specs || data.specs.length === 0) {
+        el.innerHTML = '<p style="color:var(--text-dim);">暂无Spec文件</p>';
+        return;
+      }
+      el.innerHTML = data.specs.map(s => `
+        <div class="spec-item">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <strong>${s.spec_id || '未命名'}</strong>
+              ${levelBadge(s.level || 'B')}
+              ${statusBadge(s.status || 'draft')}
+            </div>
+            <code style="font-size:11px;">${s.path}</code>
+          </div>
+          <div class="spec-meta">${s.title || '无标题'} · ${s.module || '-'} · v${s.version || '0.1'}</div>
+        </div>
+      `).join('');
+    }
+    loadSpecs();
+  </script>
+</body>
+</html>

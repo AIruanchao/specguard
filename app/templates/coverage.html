@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>覆盖率 — SpecGuard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <span class="nav-logo">🛡️ SpecGuard</span>
+    <a href="/">Dashboard</a>
+    <a href="/coverage" class="active">覆盖率</a>
+    <a href="/specs">Spec管理</a>
+    <a href="/gate">门禁检查</a>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div class="card-title" style="margin:0;">覆盖率分析</div>
+        <button class="btn btn-primary" onclick="analyzeCoverage()">🔍 分析缺口</button>
+      </div>
+      <div id="analyze-result"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">模块覆盖率详情</div>
+      <table>
+        <thead>
+          <tr>
+            <th>模块</th>
+            <th>级别</th>
+            <th style="width:30%;">覆盖率</th>
+            <th>目标</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody id="cov-table">
+          <tr><td colspan="5" id="loading">加载中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script>
+    async function loadCoverage() {
+      const cov = await fetchJSON(`${API}/coverage/business-document-generator`);
+      const tbody = document.getElementById('cov-table');
+      tbody.innerHTML = cov.modules.map(m => {
+        const status = m.coverage >= m.target
+          ? '<span class="badge badge-green">✅ 达标</span>'
+          : '<span class="badge badge-red">❌ 未达标</span>';
+        return `
+          <tr>
+            <td><code>${m.module}</code></td>
+            <td>${levelBadge(m.level)}</td>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="cov-bar" style="flex:1;">
+                  <div class="cov-fill" style="width:${m.coverage}%;background:${covColor(m.coverage)};"></div>
+                </div>
+                <span style="min-width:45px;text-align:right;">${m.coverage.toFixed(1)}%</span>
+              </div>
+            </td>
+            <td>${m.target}%</td>
+            <td>${status}</td>
+          </tr>`;
+      }).join('');
+    }
+
+    async function analyzeCoverage() {
+      document.getElementById('analyze-result').innerHTML = '<div id="loading">🔍 分析中...</div>';
+      const r = await fetchJSON(`${API}/coverage/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project_path: '/Users/maccc/projects/business-document-generator' }),
+      });
+      document.getElementById('analyze-result').innerHTML = `
+        <p>发现 <strong>${r.gaps_found}</strong> 个覆盖率缺口</p>
+        ${r.task_card_path ? `<p>任务卡: <code>${r.task_card_path}</code></p>` : ''}
+        <p style="color:var(--text-dim);">${r.message}</p>`;
+    }
+
+    loadCoverage();
+  </script>
+</body>
+</html>
