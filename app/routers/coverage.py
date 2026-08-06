@@ -1,4 +1,4 @@
-"""覆盖率引擎路由 — 包装coverage_engine.py核心逻辑"""
+"""Coverage engine routes wrapping coverage_engine.py core logic."""
 import subprocess, json, re
 from pathlib import Path
 from fastapi import APIRouter
@@ -6,6 +6,8 @@ from app.models import (
     CoverageResponse, CoverageModule,
     CoverageAnalyzeRequest, CoverageAnalyzeResponse,
 )
+from app.config import resolve_project_path
+from app.services.ts_reverse_engine import parse_vitest_coverage
 
 router = APIRouter()
 
@@ -33,17 +35,33 @@ A_LEVEL_MODULES = {
 @router.get("/{project_name}", response_model=CoverageResponse)
 async def get_coverage(project_name: str):
     """获取项目覆盖率"""
-    # 从项目路径推断
-    project_path = f"/Users/maccc/projects/{project_name}"
-    if not Path(project_path).exists():
+    project_path = resolve_project_path(project_name)
+    if not project_path.exists():
         return CoverageResponse(
             project=project_name,
             total_coverage=0,
             modules=[],
         )
 
-    # 运行覆盖率（如果.venv存在）
-    venv_python = Path(project_path) / ".venv" / "bin" / "python"
+    package_json = project_path / "package.json"
+    if package_json.exists():
+        report_path = project_path / "coverage" / "coverage-summary.json"
+        subprocess.run(
+            ["npm", "exec", "vitest", "--", "run", "--coverage"],
+            capture_output=True, text=True, timeout=120,
+            cwd=str(project_path)
+        )
+        if not report_path.exists():
+            return CoverageResponse(project=project_name, total_coverage=0, modules=[])
+        vitest = parse_vitest_coverage(str(report_path))
+        return CoverageResponse(
+            project=project_name,
+            total_coverage=round(vitest.get("lines", 0), 1),
+            modules=[],
+        )
+
+    # Run Python coverage when no TypeScript package manifest is present.
+    venv_python = project_path / ".venv" / "bin" / "python"
     if not venv_python.exists():
         venv_python = Path("python3")
 
@@ -51,7 +69,7 @@ async def get_coverage(project_name: str):
         [str(venv_python), "-m", "pytest", "tests/", "-q", "--tb=no",
          "--cov=app", "--cov-report=json:/tmp/cov_report.json", "--cov-branch"],
         capture_output=True, text=True, timeout=120,
-        cwd=project_path
+        cwd=str(project_path)
     )
 
     report_path = Path("/tmp/cov_report.json")
@@ -89,7 +107,7 @@ async def get_coverage(project_name: str):
 @router.post("/analyze", response_model=CoverageAnalyzeResponse)
 async def analyze_coverage(req: CoverageAnalyzeRequest):
     """分析覆盖率缺口并生成任务卡"""
-    project_path = Path(req.project_path)
+    project_path = resolve_project_path(req.project, req.project_path)
     if not project_path.exists():
         return CoverageAnalyzeResponse(
             gaps_found=0,

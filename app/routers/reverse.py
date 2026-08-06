@@ -5,7 +5,9 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
+from app.models import TSReverseRequest
 from app.services.reverse_engine import ReverseEngine
+from app.services.ts_reverse_engine import TypeScriptReverseEngine
 
 
 router = APIRouter()
@@ -55,6 +57,24 @@ async def analyze_reverse(req: ReverseAnalyzeRequest):
         specs_generated=len(specs),
         findings=findings,
     )
+
+
+@router.post("/analyze-ts")
+async def analyze_typescript(req: TSReverseRequest):
+    """Analyze TypeScript files."""
+    project_path = Path(req.project_path)
+    if not project_path.exists():
+        raise HTTPException(status_code=404, detail=f"Project path not found: {req.project_path}")
+
+    engine = TypeScriptReverseEngine(req.project_path)
+    results = []
+    for filepath in req.files:
+        full_path = project_path / filepath
+        if full_path.exists() and full_path.suffix in (".ts", ".tsx"):
+            analysis = engine.analyze_file(filepath)
+            analysis["filepath"] = filepath
+            results.append(analysis)
+    return {"files_analyzed": len(results), "results": results}
 
 
 @router.get("/result/{job_id}", response_model=ReverseResultResponse)

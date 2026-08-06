@@ -1,9 +1,9 @@
-"""门禁引擎路由 — 包装gate_engine.py核心逻辑"""
-import os, json, re, sys
+"""Gate engine routes wrapping gate_engine.py core logic."""
+import json, re
 from pathlib import Path
 from fastapi import APIRouter
 from app.models import GateCheckRequest, GateCheckResponse
-from app.config import DATA_DIR
+from app.config import DATA_DIR, resolve_project_path
 
 router = APIRouter()
 
@@ -26,7 +26,7 @@ def _load_module_paths():
 
 
 def _load_module_paths_for_project(project_path: str):
-    """从目标项目加载module_paths.json"""
+    """Load module_paths.json from the target project first."""
     p = Path(project_path) / "sdd" / "scripts" / "module_paths.json"
     if p.exists():
         with open(p) as f:
@@ -64,8 +64,10 @@ def _extract_spec_refs(pr_body):
 @router.post("/check", response_model=GateCheckResponse)
 async def check_gate(req: GateCheckRequest):
     """检查PR是否满足SDD门禁要求"""
+    project_root = resolve_project_path(req.project, req.project_path)
+
     # 加载模块映射
-    module_paths = _load_module_paths_for_project(req.project_path)
+    module_paths = _load_module_paths_for_project(str(project_root))
 
     # 识别受影响模块
     affected_modules, unmatched = _identify_affected_modules(
@@ -110,7 +112,6 @@ async def check_gate(req: GateCheckRequest):
         )
 
     # 验证Spec文件存在性
-    project_root = Path(req.project_path)
     missing = []
     for ref in spec_refs:
         if not (project_root / ref).exists():

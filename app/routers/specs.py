@@ -1,9 +1,10 @@
-"""Spec管理路由 — 读取项目sdd/目录中的Spec文件"""
+"""Spec management routes reading project sdd directories."""
 import re
 from pathlib import Path
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Optional
+from app.config import resolve_project_path
 
 router = APIRouter()
 
@@ -43,10 +44,10 @@ def _parse_frontmatter(content: str) -> dict:
 
 
 @router.get("/list", response_model=SpecListResponse)
-async def list_specs(project: str = "business-document-generator"):
+async def list_specs(project: str = "business-document-generator", project_path: str = ""):
     """列出项目的所有Spec文件"""
-    project_path = Path(f"/Users/maccc/projects/{project}")
-    sdd_dir = project_path / "sdd" / "domain-spec"
+    root_path = resolve_project_path(project, project_path)
+    sdd_dir = root_path / "sdd" / "domain-spec"
 
     specs = []
     if sdd_dir.exists():
@@ -61,7 +62,7 @@ async def list_specs(project: str = "business-document-generator"):
                     level=fm.get("level", ""),
                     status=fm.get("status", ""),
                     version=str(fm.get("version", "")),
-                    path=str(spec_file.relative_to(project_path)),
+                    path=str(spec_file.relative_to(root_path)),
                     owner=fm.get("owner", ""),
                 ))
             except Exception:
