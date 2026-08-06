@@ -76,16 +76,31 @@ class TestGate:
         assert r.json()["passed"] is False
 
     def test_gate_with_spec(self):
-        """业务变更+正确Spec→PASS"""
-        r = client.post("/api/v1/gate/check", json={
-            "project_path": "/Users/maccc/projects/business-document-generator",
-            "changed_files": ["app/services/smart_seal.py"],
-            "pr_body": "修复 Spec: sdd/domain-spec/seal-engine/spec.md",
-            "pr_labels": [],
-        })
-        assert r.status_code == 200
-        assert r.json()["passed"] is True
-        assert "sdd/domain-spec/seal-engine/spec.md" in r.json()["spec_refs"]
+        """业务变更+正确Spec→PASS（使用临时目录模拟Spec文件）"""
+        import tempfile, os
+        # 创建临时项目+Spec文件
+        with tempfile.TemporaryDirectory() as tmpdir:
+            spec_dir = os.path.join(tmpdir, "sdd", "domain-spec", "seal-engine")
+            os.makedirs(spec_dir)
+            with open(os.path.join(spec_dir, "spec.md"), "w") as f:
+                f.write('---\nspec_id: "SPEC-SE-001"\ntitle: "test"\nmodule: "seal-engine"\nlevel: "A"\nstatus: "confirmed"\nowner: "test"\nversion: "1.0"\n---\n# Test')
+
+            # 创建临时module_paths.json
+            scripts_dir = os.path.join(tmpdir, "sdd", "scripts")
+            os.makedirs(scripts_dir)
+            import json
+            with open(os.path.join(scripts_dir, "module_paths.json"), "w") as f:
+                json.dump({"seal-engine": ["app/services/smart_seal.py"]}, f)
+
+            r = client.post("/api/v1/gate/check", json={
+                "project_path": tmpdir,
+                "changed_files": ["app/services/smart_seal.py"],
+                "pr_body": "修复 Spec: sdd/domain-spec/seal-engine/spec.md",
+                "pr_labels": [],
+            })
+            assert r.status_code == 200
+            assert r.json()["passed"] is True
+            assert "sdd/domain-spec/seal-engine/spec.md" in r.json()["spec_refs"]
 
 
 # === CI检查 ===
