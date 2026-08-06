@@ -11,7 +11,7 @@ from app.services.ts_reverse_engine import parse_vitest_coverage
 
 router = APIRouter()
 
-# A级模块配置
+# Level A module configuration.
 A_LEVEL_MODULES = {
     "app/services/smart_seal.py": ("seal-engine", "A"),
     "app/services/seal_position.py": ("seal-engine", "A"),
@@ -34,7 +34,7 @@ A_LEVEL_MODULES = {
 
 @router.get("/{project_name}", response_model=CoverageResponse)
 async def get_coverage(project_name: str):
-    """获取项目覆盖率"""
+    """Return project coverage."""
     project_path = resolve_project_path(project_name)
     if not project_path.exists():
         return CoverageResponse(
@@ -106,7 +106,7 @@ async def get_coverage(project_name: str):
 
 @router.post("/analyze", response_model=CoverageAnalyzeResponse)
 async def analyze_coverage(req: CoverageAnalyzeRequest):
-    """分析覆盖率缺口并生成任务卡"""
+    """Analyze coverage gaps and generate a task card."""
     project_path = resolve_project_path(req.project, req.project_path)
     if not project_path.exists():
         return CoverageAnalyzeResponse(
@@ -114,7 +114,7 @@ async def analyze_coverage(req: CoverageAnalyzeRequest):
             message=f"项目路径不存在: {req.project_path}",
         )
 
-    # 运行覆盖率分析脚本
+    # Run the project coverage analysis script.
     venv_python = project_path / ".venv" / "bin" / "python"
     script = project_path / "sdd" / "scripts" / "coverage-auto-improve.py"
 
@@ -127,7 +127,7 @@ async def analyze_coverage(req: CoverageAnalyzeRequest):
             capture_output=True, text=True, timeout=120,
             cwd=str(project_path)
         )
-        # 从输出提取TASK_CARD路径
+        # Extract TASK_CARD path from stdout.
         task_line = [l for l in result.stdout.split('\n') if l.startswith('TASK_CARD=')]
         task_path = task_line[0].split('=', 1)[1] if task_line else None
 

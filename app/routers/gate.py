@@ -7,13 +7,13 @@ from app.config import DATA_DIR, resolve_project_path
 
 router = APIRouter()
 
-# 加载module_paths.json
+# Load module_paths.json.
 _MODULE_PATHS_FILE = DATA_DIR / "module_paths.json"
 
 
 def _load_module_paths():
-    """加载模块→文件映射"""
-    # 查找module_paths.json（app/data/或项目sdd/scripts/）
+    """Load the module-to-file mapping."""
+    # Search app/data first, then the legacy project data path.
     candidates = [
         _MODULE_PATHS_FILE,
         Path(__file__).resolve().parent.parent / "data" / "module_paths.json",
@@ -35,7 +35,7 @@ def _load_module_paths_for_project(project_path: str):
 
 
 def _identify_affected_modules(changed_files, module_paths):
-    """识别受影响的模块"""
+    """Identify modules affected by changed files."""
     file_to_module = {}
     for module, files in module_paths.items():
         for f in files:
@@ -54,7 +54,7 @@ def _identify_affected_modules(changed_files, module_paths):
 
 
 def _extract_spec_refs(pr_body):
-    """从PR描述中提取Spec引用"""
+    """Extract Spec references from a PR body."""
     if not pr_body:
         return []
     pattern = r'sdd/(?:domain-spec|change-log|enterprise-spec)/[^\s\)\]"\'<>]+\.md'
@@ -63,18 +63,18 @@ def _extract_spec_refs(pr_body):
 
 @router.post("/check", response_model=GateCheckResponse)
 async def check_gate(req: GateCheckRequest):
-    """检查PR是否满足SDD门禁要求"""
+    """Check whether a PR satisfies the SDD gate."""
     project_root = resolve_project_path(req.project, req.project_path)
 
-    # 加载模块映射
+    # Load module mappings.
     module_paths = _load_module_paths_for_project(str(project_root))
 
-    # 识别受影响模块
+    # Identify affected modules.
     affected_modules, unmatched = _identify_affected_modules(
         req.changed_files, module_paths
     )
 
-    # 检查hotfix/豁免标签
+    # Check hotfix and exemption labels.
     if "hotfix-emergency" in req.pr_labels:
         return GateCheckResponse(
             passed=True,
@@ -88,7 +88,7 @@ async def check_gate(req: GateCheckRequest):
             warnings=["docs-only/dependency-bump标签豁免"],
         )
 
-    # 未匹配的受保护文件
+    # Block unmatched protected files.
     protected_prefixes = ("app/routes/", "app/services/", "app/models.py", "app/schema.py", "app/auth.py")
     unmatched_protected = [f for f in unmatched if any(f.startswith(p) for p in protected_prefixes)]
     if unmatched_protected:
@@ -101,7 +101,7 @@ async def check_gate(req: GateCheckRequest):
     if not affected_modules:
         return GateCheckResponse(passed=True, affected_modules=[])
 
-    # 提取Spec引用
+    # Extract Spec references.
     spec_refs = _extract_spec_refs(req.pr_body)
 
     if not spec_refs:
@@ -111,7 +111,7 @@ async def check_gate(req: GateCheckRequest):
             errors=["业务代码变更未引用任何sdd/Spec文件"],
         )
 
-    # 验证Spec文件存在性
+    # Validate referenced Spec files exist.
     missing = []
     for ref in spec_refs:
         if not (project_root / ref).exists():

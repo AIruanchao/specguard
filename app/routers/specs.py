@@ -31,7 +31,7 @@ class SpecListResponse(BaseModel):
 
 
 def _parse_frontmatter(content: str) -> dict:
-    """解析Spec文件的YAML frontmatter"""
+    """Parse YAML frontmatter from a Spec file."""
     if not yaml:
         return {}
     m = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
@@ -45,7 +45,7 @@ def _parse_frontmatter(content: str) -> dict:
 
 @router.get("/list", response_model=SpecListResponse)
 async def list_specs(project: str = "business-document-generator", project_path: str = ""):
-    """列出项目的所有Spec文件"""
+    """List all Spec files for a project."""
     root_path = resolve_project_path(project, project_path)
     sdd_dir = root_path / "sdd" / "domain-spec"
 

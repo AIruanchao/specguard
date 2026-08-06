@@ -28,11 +28,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 静态文件
+# Static files.
 static_dir = Path(__file__).resolve().parent / "static"
 app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
-# API路由
+# API routes.
 app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(gate.router, prefix="/api/v1/gate", tags=["gate"])
 app.include_router(coverage.router, prefix="/api/v1/coverage", tags=["coverage"])
@@ -40,7 +40,7 @@ app.include_router(ci.router, prefix="/api/v1/ci", tags=["ci"])
 app.include_router(specs.router, prefix="/api/v1/specs", tags=["specs"])
 app.include_router(reverse.router, prefix="/api/v1/reverse", tags=["reverse"])
 
-# Web UI路由
+# Web UI routes.
 app.include_router(web.router, tags=["web"])
 
 
