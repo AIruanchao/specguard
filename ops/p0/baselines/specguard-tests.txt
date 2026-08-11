@@ -1,0 +1,9 @@
+8, 205, 238, 241, 295, 313-314, 320-321
+app/services/ts_reverse_engine.py     104     12    88%   67-74, 98, 111, 113, 157
+tests/__init__.py                       0      0   100%
+tests/test_api.py                      90      0   100%
+tests/test_reverse.py                  66      0   100%
+tests/test_ts_reverse.py               65      0   100%
+-----------------------------------------------------------------
+TOTAL                                 883    113    87%
+32 passed, 3 warnings in 0.94s

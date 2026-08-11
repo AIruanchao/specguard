@@ -1,0 +1,7 @@
+est_init_without_dsn_returns_false>
+          <Function test_init_with_dsn_but_no_sdk>
+        <Class TestCaptureException>
+          <Function test_capture_without_sentry>
+          <Function test_capture_with_extra>
+
+========================= 90 tests collected in 0.10s ==========================

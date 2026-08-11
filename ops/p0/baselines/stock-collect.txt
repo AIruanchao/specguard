@@ -1,0 +1,6 @@
+e_hk_indices.py
+ERROR tests/test_yfinance_jp_kr_indices.py
+ERROR tests/test_yfinance_normalize.py
+ERROR tests/test_yfinance_us_indices.py
+!!!!!!!!!!!!!!!!!! Interrupted: 173 errors during collection !!!!!!!!!!!!!!!!!!!
+================== 826 tests collected, 173 errors in 16.18s ===================

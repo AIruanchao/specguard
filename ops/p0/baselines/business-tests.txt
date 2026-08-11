@@ -1,0 +1,6 @@
+t_utils_deep.py::TestModuleLoggerDeep::test_module_logger_propagates_to_root
+ERROR tests/test_utils_deep.py::TestModuleLoggerDeep::test_module_logger_name_is_app
+ERROR tests/test_utils_deep.py::TestModuleLoggerDeep::test_module_logger_child_loggers_inherit
+ERROR tests/test_vlm_extractor.py::TestPreprocessUpload::test_jpeg_image - Fi...
+ERROR tests/test_vlm_extractor.py::TestPreprocessUpload::test_word_doc - File...
+93 failed, 2819 passed, 442 skipped, 40 warnings, 268 errors in 83.69s (0:01:23)
