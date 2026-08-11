@@ -57,3 +57,78 @@ def test_benchmark_midpoint_consistency():
             assert mid >= 28
         elif v == "BLOCK":
             assert mid < 18
+
+
+from dataclasses import dataclass, field
+from typing import Dict, List, Tuple
+
+
+@dataclass
+class BenchmarkSample:
+    """A frozen benchmark sample for voting evaluation."""
+    sample_id: str
+    title: str
+    summary: str
+    expected_score_range: Tuple[int, int]
+    expected_verdict: str
+    proposal_body: str = ""
+
+    @property
+    def midpoint(self) -> float:
+        return sum(self.expected_score_range) / 2
+
+
+# Build typed samples from BENCHMARK_SAMPLES
+TYPED_SAMPLES: List[BenchmarkSample] = [
+    BenchmarkSample(
+        sample_id=f"S{i+1:02d}",
+        title=s["title"],
+        summary=s["summary"],
+        expected_score_range=s["expected_score_range"],
+        expected_verdict=s["expected_verdict"],
+        proposal_body=s["summary"],
+    )
+    for i, s in enumerate(BENCHMARK_SAMPLES)
+]
+
+# Export under the names delegation code expects
+PROPOSAL_BODY_BY_ID: Dict[str, str] = {s.sample_id: s.proposal_body for s in TYPED_SAMPLES}
+
+
+def expected_score_range(sample_id: str) -> Tuple[int, int]:
+    """Get expected score range for a sample."""
+    for s in TYPED_SAMPLES:
+        if s.sample_id == sample_id:
+            return s.expected_score_range
+    raise KeyError(f"Unknown sample_id: {sample_id}")
+
+
+def expected_verdict(sample_id: str) -> str:
+    """Get expected verdict for a sample."""
+    for s in TYPED_SAMPLES:
+        if s.sample_id == sample_id:
+            return s.expected_verdict
+    raise KeyError(f"Unknown sample_id: {sample_id}")
+
+
+def score_within_range(score: float, sample_id: str) -> bool:
+    """Check if a score falls within the expected range."""
+    low, high = expected_score_range(sample_id)
+    return low <= score <= high
+
+
+def verdict_from_score(score: float) -> str:
+    """Derive verdict from a score using fixed thresholds."""
+    if score >= 28:
+        return "APPROVE"
+    elif score < 18:
+        return "BLOCK"
+    else:
+        return "CONCERNS"
+
+
+# Alias for delegation compatibility: some code uses .id instead of .sample_id
+# Add id property to BenchmarkSample
+def _benchmark_id(self):
+    return self.sample_id
+BenchmarkSample.id = property(_benchmark_id)

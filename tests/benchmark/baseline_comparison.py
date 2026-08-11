@@ -25,14 +25,14 @@ import os
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Sequence, Tuple
 
-from .vote_benchmark import (
+from .test_vote_benchmark import (
     BENCHMARK_SAMPLES,
     BenchmarkSample,
     expected_verdict,
     score_within_range,
     verdict_from_score,
 )
-from .blind_protocol import (
+from .test_blind_protocol import (
     DEFAULT_MODELS,
     MODEL_TIERS,
     ModelResponse,
@@ -270,7 +270,7 @@ def run_baseline_comparison(
             # Wrap as a one-model "ensemble" so we can reuse the
             # scoring helpers. The verdict is just resp.verdict and
             # the score is resp.score.
-            from .blind_protocol import EnsembleResult as _ER
+            from .test_blind_protocol import EnsembleResult as _ER
             pseudo = _ER(
                 sample_id=s.id,
                 per_model=[resp],

@@ -37,7 +37,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
-from .vote_benchmark import (
+from .test_vote_benchmark import (
     BENCHMARK_SAMPLES,
     BenchmarkSample,
     PROPOSAL_BODY_BY_ID,
