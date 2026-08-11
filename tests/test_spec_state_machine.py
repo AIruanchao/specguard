@@ -70,14 +70,10 @@ def completion_rate(statuses: list[str]) -> float:
 class TestSpecStateMachine:
     """Validate the draft -> review -> approved -> verified state machine."""
 
-    def test_initial_state_is_draft(self):
-        """A newly created spec starts in draft."""
-        # No transition needed — draft is the implicit entry point.
-        assert "draft" in LEGAL_TRANSITIONS
-        assert "review" in LEGAL_TRANSITIONS["draft"]
-
     def test_draft_to_review_is_legal(self):
         """Forward transition from draft to review must be allowed."""
+        assert "draft" in LEGAL_TRANSITIONS
+        assert "review" in LEGAL_TRANSITIONS["draft"]
         assert transition("draft", "review") == "review"
 
     def test_review_to_approved_is_legal(self):
