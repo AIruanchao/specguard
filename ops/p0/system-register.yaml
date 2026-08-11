@@ -1,0 +1,70 @@
+systems:
+  - id: business-api
+    name: 商务单据系统
+    path: /Users/maccc/projects/business-document-generator
+    lang: python
+    test_cmd: .venv/bin/python -m pytest tests/ -q --tb=no
+    coverage: 68%
+    ci: true
+    sdd: true
+    deploy: systemd@cloud3
+
+  - id: specguard
+    name: SpecGuard
+    path: /Users/maccc/projects/specguard
+    lang: python
+    test_cmd: .venv/bin/python -m pytest tests/ -q --tb=no
+    coverage: 87%
+    ci: true
+    sdd: true
+    deploy: launchd@local
+
+  - id: dh-factory
+    name: DH企业工厂
+    path: /opt/dh-enterprise-factory
+    lang: python+shell
+    test_cmd: python3 -m pytest tests/ -q --tb=no
+    coverage: 18%
+    ci: true
+    sdd: true
+    deploy: local
+
+  - id: erp-web
+    name: 七色米ERP
+    path: MacMini:/Users/mac/erp-project
+    lang: nextjs
+    test_cmd: PATH=/usr/local/bin:$PATH npm test -- --run
+    coverage: untested
+    ci: true
+    sdd: true
+    deploy: systemd@cloud4
+
+  - id: stock-api
+    name: 股票仪表盘
+    path: /Users/maccc/daily_stock_analysis
+    lang: python
+    test_cmd: python3 -m pytest tests/test_main.py -q --tb=no -c pytest.ini
+    coverage: untested
+    ci: true
+    sdd: true
+    deploy: systemd@cloud
+
+  - id: ledger
+    name: 台账质量系统
+    path: /Users/maccc/Projects/ledger-quality-system
+    lang: python
+    test_cmd: .venv311/bin/python3 -m pytest tests/unit/test_config.py -q --tb=no
+    coverage: untested
+    ci: true
+    sdd: true
+    deploy: local
+
+  - id: specguard-cloud3
+    name: SpecGuard生产
+    path: cloud3:/opt/specguard
+    lang: docker
+    test_cmd: docker ps
+    coverage: n/a
+    ci: false
+    sdd: true
+    deploy: docker@cloud3
