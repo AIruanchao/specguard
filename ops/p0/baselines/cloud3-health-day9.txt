@@ -1,0 +1,4 @@
+cloud3 Docker状态 (2026-08-12 00:42):
+new-api	Up 2 weeks
+newapi-redis	Up 2 weeks
+newapi-mysql	Up 2 weeks
