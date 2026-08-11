@@ -1,0 +1,20 @@
+    [90m 94|[39m     [35mconst[39m createCall [33m=[39m fetchSpy[33m.[39mmock[33m.[39mcalls[[34m1[39m][33m;[39m
+    [90m 95|[39m     [35mconst[39m body [33m=[39m [33mJSON[39m[33m.[39m[34mparse[39m(createCall[[34m1[39m][33m![39m[33m.[39mbody [35mas[39m string)[33m;[39m
+    [90m 96|[39m     [34mexpect[39m(body[33m.[39mfields)[33m.[39m[34mtoEqual[39m({ [32m"合同编号"[39m[33m:[39m [32m"C-001"[39m[33m,[39m [32m"合同金额"[39m[33m:[39m [34m100000[39m })[33m;[39m
+    [90m   |[39m                         [31m^[39m
+    [90m 97|[39m     [34mexpect[39m(body[33m.[39mfields)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m"已交付"[39m)[33m;[39m
+    [90m 98|[39m     [34mexpect[39m(body[33m.[39mfields)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m"交付状态"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m109 passed[39m[22m[90m (112)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m703 passed[39m[22m[90m (704)[39m
+[2m   Start at [22m 00:27:54
+[2m   Duration [22m 2.53s[2m (transform 2.01s, setup 0ms, import 5.94s, tests 3.26s, environment 6ms)[22m
+
+npm notice
+npm notice New major version of npm available! 10.9.0 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
