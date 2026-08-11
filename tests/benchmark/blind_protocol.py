@@ -464,15 +464,20 @@ def _majority(responses: List[ModelResponse]) -> Tuple[str, int, int]:
             counts[r.verdict] = counts.get(r.verdict, 0) + 1
             by_verdict[r.verdict].append(r)
     # Top verdict by count, tie-break by tier (lower index wins).
-    top = max(
-        counts.items(),
-        key=lambda kv: (kv[1], -min(MODEL_TIERS.get(r.model, 99)
-                                     for r in by_verdict[kv[0]])),
-    )
-    final_verdict, top_count = top
-    if top_count == 0:
+    # Skip empty buckets to keep the tier min safe.
+    non_empty = [(v, c) for v, c in counts.items() if c > 0]
+    if not non_empty:
         # All failed: pessimistic default.
         return "BLOCK", 0, 0
+    top = max(
+        non_empty,
+        key=lambda kv: (
+            kv[1],
+            -min(MODEL_TIERS.get(r.model, 99)
+                for r in by_verdict[kv[0]]),
+        ),
+    )
+    final_verdict, top_count = top
     # Final score = mean of models that agreed with the verdict.
     agreeing = by_verdict[final_verdict]
     final_score = round(sum(r.score for r in agreeing) / len(agreeing))
