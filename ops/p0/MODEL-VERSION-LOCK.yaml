@@ -1,0 +1,32 @@
+# Multi-Model Voting — Model Version Lock
+# Fixed versions for reproducible voting results
+
+models:
+  - name: GPT-5.6Luna
+    model_id: gpt-5.6-luna
+    endpoint: https://ai.nenie.vip/v1
+    version_locked: 2026-08-11
+    role: T1 strict auditor
+
+  - name: GPT-5.4
+    model_id: gpt-5.4
+    endpoint: https://ai.nenie.vip/v1
+    version_locked: 2026-08-11
+    role: T1 balanced
+
+  - name: GLM-5.2
+    model_id: glm-5.2
+    endpoint: https://ai.nenie.vip/v1
+    version_locked: 2026-08-11
+    role: T2 lenient
+
+  - name: MiniMax-M3
+    model_id: MiniMax-M3
+    endpoint: https://ai.nenie.vip/v1
+    version_locked: 2026-08-11
+    role: T2 enterprise
+
+voting_rules:
+  threshold: 3/4 APPROVE
+  block_on_any: true
+  recalibrate_monthly: true
