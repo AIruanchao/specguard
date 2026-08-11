@@ -42,3 +42,13 @@ jobs:
       - name: Coverage gate
         run: |
           .venv/bin/python -m pytest --cov=app --cov-fail-under=80 --cov-report=term -q --tb=no || exit 1
+
+      - name: Lint (ruff)
+        run: |
+          pip install ruff 2>/dev/null || true
+          ruff check app/ --select=E,F --ignore=E501 || true
+
+      - name: Security scan (bandit)
+        run: |
+          pip install bandit 2>/dev/null || true
+          bandit -r app/ -f json -o /tmp/bandit-report.json || true
