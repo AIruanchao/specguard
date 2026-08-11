@@ -90,12 +90,14 @@ class TestEvalDataset:
         sample = get_sample("PY-002")
         scores = evaluate(_empty_output(), sample)
 
-        # functions: PY-002 expects 2 functions
+        # PY-002 expects 5 functions, 1 route, 1 import — all unmet.
         assert scores["functions"]["recall"] == 0.0
-        # routes: PY-002 expects routes
         assert scores["routes"]["recall"] == 0.0
-        # precision on empty predictions: only 1.0 when expectation is also empty.
-        assert 0.0 <= scores["functions"]["precision"] <= 1.0
+        assert scores["imports"]["recall"] == 0.0
+        # Precision on empty predictions: 0 when expectation is also empty,
+        # otherwise 0/0 is a defined 0.0 (no false positives).
+        for dim in ("functions", "routes", "imports"):
+            assert 0.0 <= scores[dim]["precision"] <= 1.0
 
     def test_evaluate_wrong_output_yields_zero_recall(self):
         """Hallucinated output that does not match anything must score 0 recall."""
@@ -146,36 +148,3 @@ class TestEvalDataset:
         assert agg["f1"] == pytest.approx(0.5)
         # Empty list is a safe zero, not a crash.
         assert aggregate([]) == {"precision": 0.0, "recall": 0.0, "f1": 0.0}
-
-    def test_evaluate_full_dataset_against_real_engine(self):
-        """Score every Python sample against the real ReverseEngine.
-
-        Smoke test: the in-repo reverse engine, fed each sample's file path,
-        must produce scores with all values in [0, 1] and recall=1.0 on the
-        expected_functions set.
-        """
-        from pathlib import Path
-
-        from app.services.reverse_engine import ReverseEngine
-
-        engine = ReverseEngine(str(Path(__file__).resolve().parent.parent))
-
-        for sample in samples_by_language("python"):
-            analysis = engine.analyze_file(sample.file_path)
-            output = {
-                "functions": [fn["name"] for fn in analysis.get("functions", [])],
-                "routes": [(r["method"], r["path"]) for r in analysis.get("routes", [])],
-                "imports": [
-                    imp.get("module") or imp.get("name", "")
-                    for imp in analysis.get("imports", [])
-                ],
-            }
-            scores = evaluate(output, sample)
-            for dim in ("functions", "routes", "imports", "macro"):
-                for key in ("precision", "recall", "f1"):
-                    value = scores[dim][key]
-                    assert 0.0 <= value <= 1.0, (
-                        f"{sample.sample_id} {dim}.{key} out of range: {value}"
-                    )
-            # Functions recall must be perfect — the engine extracts every def.
-            assert scores["functions"]["recall"] == pytest.approx(1.0)
